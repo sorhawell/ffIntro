@@ -24,7 +24,9 @@ RF = randomForest(x=X,y=y,
 print(RF)
 
 
-##show obects
+#*# read the print, is this a good fit?
+
+
 #RF$predicted is the OOB-CV predictions
 par(mfrow=c(1,2))
 plot(RF$predicted,y,
@@ -45,6 +47,8 @@ cat("explained variance, (pseudo R²) = 1- SSmodel/SStotal = \n",
 cat("model correlation, (Pearson R²) = ",round(cor(RF$pred,y)^2,2))
 cat("signal correlation, (Pearson R²) = ",round(cor(y,ysignal)^2,2))
 
+
+#*# try to change sampsize, nodesize, mtry and see if you can get a lower OOB-CV error
 
 
 
