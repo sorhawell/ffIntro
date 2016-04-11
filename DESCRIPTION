@@ -1,0 +1,10 @@
+Package: ffIntro
+Type: Package
+Title: simple package with lecture materials
+Version: 1.0
+Date: 2016-04-11
+Author: SH Welling
+Maintainer: <sowe@dtu.dk>
+Description: Contains some material for a single introduction lecture to RF
+License: What license is it under?
+RoxygenNote: 5.0.1
