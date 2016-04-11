@@ -23,21 +23,21 @@ dim(Tree)
 Tree[1:50,]
 
 #function to plot surfaces or slices of model structures
+vec.plot(model=rf,X=X,i.var=1:2,col=ycolor,grid.lines = 200)
 dev.new()
 par(mfrow=c(1,2))
 for(i in 1:2) vec.plot(model=rf,X=X,i.var=i,col=ycolor,grid.lines = 1000,
-                       main=paste)
-vec.plot(model=rf,X=X,i.var=1:2,col=ycolor,grid.lines = 200)
+                       main=paste("2D slice of model structure var:",i))
 
 
 
 #single fully grown trees sensitive to noise
 #make data
 X = data.frame(replicate(2,runif(2500)-.5))
-y = -X[,1]^2  -X[,2]^2 +rnorm(2500)*.02
+y = -X[,1]^2  -X[,2]^2 +rnorm(2500)*.1
 
 Xtest = data.frame(replicate(2,runif(2500)-.5))
-ytest = -Xtest[,1]^2  -Xtest[,2]^2+rnorm(2500)*.02
+ytest = -Xtest[,1]^2  -Xtest[,2]^2+rnorm(2500)*.1
 
 
 
@@ -47,26 +47,44 @@ plot3d(x= X[,1],y= X[,2],z= y,col = ycolor,size=6)
 
 #train one single tree
 rf = randomForest(x=X,y=y,ntree=1,nodesize=1)
+open3d()
 vec.plot(model=rf,X=X,i.var=1:2,col=ycolor,grid.lines = 200)
 
 
-nodesizes = c(1:15,ceiling(seq(20,1500,length.out=100)))
-modelErr = sapply(
-  #what to iterate
-  nodesizes, 
-  
-  #function to run
-  function(i){
-    rf = randomForest(X,y,ntree=1,nodesize = i,#train a forest
+
+nodesizes = c(1:15,ceiling(seq(20,1500,length.out=100)))#vector of different nodesizes
+
+#iterate
+modelErr = sapply( # iterator
+  nodesizes,       # what to iterate
+  function(i){     # function to run with different i's
+    rf = randomForest(X,y,ntree=1,nodesize = i,#train a forest with nodesize=i
                       samplesize=2500,replace=F,mtry=2) 
     preds = predict(rf,Xtest) #predict
-    mse = sqrt(sum((preds-ytest)^2)/length(preds))
-    return(mse)
+    mse = sqrt(sum((preds-ytest)^2)/length(preds)) #compute error
+    return(mse) #return error from each model
   }
 )
 
+#plot test calibration to select optimal nodesize00
 plot(nodesizes,modelErr,type="l",log="x",main="calibrate nodesize")
 
 rf = randomForest(x=X,y=y,ntree=1,nodesize=50)
+preds = predict(rf,Xtest) #predict
+sqrt(sum((preds-ytest)^2)/length(preds)) #compute error
 vec.plot(model=rf,X=X,i.var=1:2,col=ycolor,grid.lines = 200)
+
+#run default RF instead
+rf = randomForest(x=X,y=y,mtry=2)
+vec.plot(model=rf,X=X,i.var=1:2,col=ycolor,grid.lines = 200) #ouch looks very overfitted!
+preds = predict(rf,Xtest) #predict
+sqrt(sum((preds-ytest)^2)/length(preds)) #compute error
+
+#*# try to lower nodesize to 50 and 
+
+#*# try to increase nodesize a little bit and check if error lowers
+
+#*# try to lower sampsize to around 50 to 1500 to obtain a smooth model structure and
+#*#  and lowest error.
+
 

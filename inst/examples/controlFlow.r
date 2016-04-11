@@ -34,9 +34,32 @@ ncols=dim(m)[2]
 out = sapply(1:ncols,function(j) f(m[,j]))
 out = lapply(1:dim(m)[2],function(j) f(m[,j]))
 
+#*# try to make a matrix with with 10 columns of random distributed numbers
+ #use sapply, function, rnorm
 
-##part two replicate, scope, grid search
 
+#*# check use of replicate in surface_of_trees.R, what is the difference between
+ #replicate, sapply, lappy
+
+#*# sapply is really, the mapper called lapply() plus a reducer function like
+#*# cbind() or rbind() or data.frame(), c() or list(), see help files
+#*# notice all start with three dots ....  That mean they will take many inputs,
+#*# columns or what ever and here bind them together
+
+f = function(x) x^2
+out = sapply(1:ncols,function(j) f(m[,j]))  #this is equilatent to
+listOfSq = lapply(1:ncols,function(j) f(m[,j]))
+out = do.call(what=cbind,args=listOfSq)
+
+out = do.call(what=data.frame,args=c(listOfSq))
+names(out) = paste0("X",1:5)
+out
+
+
+
+
+###part two replicate, scope, grid search
+rm(list=ls())
 #simulate data
 obs=2500
 vars = 6 
@@ -50,6 +73,10 @@ print(cor(Ysignal,Y))
 rfo=randomForest(X,Y,keep.inbag = TRUE,sampsize=1000,ntree=500,mtry=5)
 print(rfo)
 
+
+
+##more examples
+
 #grid search light
 mtrys= c(1,2,3,4,5,6)
 sampsizes = c(25,50,100,200,1000)
@@ -58,7 +85,7 @@ pars  =  expand.grid(mtry= mtrys,
 #those paremeters changing
 parsInList = lapply(1:dim(pars)[1], function(i) pars[i,])
 #those paremeters constant
-std.arg = alist(x=X,y=Y,nrtee=300)
+std.arg = alist(x=X,y=Y,ntree=300)
 
 library(parallel) #mclapply
 R2.fit = mclapply(parsInList, function(these.pars) {
@@ -74,8 +101,3 @@ persp3d(x = mtrys,
         y = sampsizes,
         z = matrix(unlist(R2.fit),nrow=length(mtrys)),
         col=c("grey","black"),alpha=.2)
-
-
-
-
-
