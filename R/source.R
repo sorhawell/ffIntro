@@ -6,8 +6,8 @@
 #' @examples
 #' getPackagePath(name="base",setAsWD=FALSE)
 #' 
-getPackagePath = function(name="ffIntro",setAsWD=FALSE) {
-  path = system.file(package('ffIntro'))
+getPackagePath = function(setAsWD=FALSE,name="ffIntro") {
+  path = system.file(package='ffIntro')
   if(setAsWD) setwd(path)
   return(path)
 }
