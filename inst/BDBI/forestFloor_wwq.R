@@ -22,19 +22,23 @@ data(wwq)
 X = wwq[samps,names(wwq) != "quality"]
 y = wwq[samps,"quality"]
 
+plot(X[1:500,])
+
 #train model
 rfo = randomForest(X,y,keep.inbag=TRUE,importance=T)
 plot(rfo) ##OOB explained variance, psedo correlation
 mean(abs(round(rfo$predicted,9)-y)) #OOB MAD prediction performance
 cor(round(rfo$predicted,5),y)^2 #OOB R2 squared pearsons
-
+plot(rfo$predicted,y,col="#00000013")
+varImpPlot(rfo)
+partialPlot(rfo,X,1)
 #compute crossvalidated feature contributions of training set with forestFloor
 ff = forestFloor(rfo,X)
 
 ## 1: plot main effects + colour gradient to learn interactions with "alcohol"
 #add fit of main effects with k-nearest neighbor, 50 neighbors chosen manually
 #ff = convolute_ff(ff,userArgs.kknn=list(kmax=50)) #saved in ff$FCfit
-Col1=fcol(ff,1,alpha=.05,order=T)#apply colour gradient by values of most important variable (alcohol)
+Col1=fcol(ff,3,alpha=.05,order=T)#apply colour gradient by values of most important variable (alcohol)
 plot(ff,col=Col1,plot_GOF=T,cropXaxes=c(1:11)) #plot one-way main effects, crop outliers
 if(export) { #export as vector graphics
   dev.copy(cairo_pdf,file=paste0(expPa,'simplot4.pdf'), width=7, height=9)
@@ -44,7 +48,7 @@ if(export) { #export as vector graphics
 
 ## 2: Use 3Dplot to investigate inteaction between volatile acid and alcohol 
 par3d(cex=2)
-show3d(ff,c(1,3),c(3,3),col=Col1,limit=7,plot.rgl=list(box=F,size=8))
+show3d(ff,c(1,3),c(1,3),col=Col1,limit=7,plot.rgl=list(box=F,size=8))
 decorate3d(add=T,xlab="",ylab="",zlab="",axes=F)
 if(export) rgl.snapshot(file=paste0(expPa,'wwq.volatile.png'), fmt = "png")
 

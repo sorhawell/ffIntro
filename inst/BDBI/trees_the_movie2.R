@@ -19,7 +19,7 @@ i=0
 for(i in 0:50) {
   #i=i+1
   set.seed(1)
-  rf = randomForest(X,y,nodesize = 500,ntree=i)
+  rf = randomForest(X,y,maxnodes =i,ntree=1)
   vec.plot(rf,X,1:2,col=ycolor)
   play3d(spin3d(rpm=20,axis =c(.5,0,2)),duration=3)
 }
