@@ -1,3 +1,4 @@
+rm(list=ls())
 library(forestFloor)
 library(randomForest)
 library(rgl)
@@ -17,13 +18,14 @@ plot3d(x= X[,1],y= X[,2],z= y,col = ycolor,size=6)
 rf = randomForest(x=X,y=y,ntree=1)
 
 #getTree
-Tree = getTree(rf,k=1)
+Tree = getTree(rf,k=1,)
 class(Tree)
 dim(Tree)
 Tree[1:50,]
 
 #function to plot surfaces or slices of model structures
 vec.plot(model=rf,X=X,i.var=1:2,col=ycolor,grid.lines = 200)
+
 dev.new()
 par(mfrow=c(1,2))
 for(i in 1:2) vec.plot(model=rf,X=X,i.var=i,col=ycolor,grid.lines = 1000,

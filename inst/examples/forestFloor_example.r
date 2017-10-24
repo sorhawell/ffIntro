@@ -1,4 +1,5 @@
 rm(list=ls())
+library(randomForest)
 library(forestFloor)
 #simulate data
 obs=2500
